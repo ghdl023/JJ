@@ -3,8 +3,12 @@ import 'package:jj/screen/home_screen.dart';
 import 'package:jj/screen/like_screen.dart';
 import 'package:jj/screen/setting_screen.dart';
 import 'widget/bottom_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Add this
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

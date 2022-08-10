@@ -18,13 +18,13 @@ class Bottom extends StatelessWidget {
                 size: 18,
               ),
               child: Text(
-                'Home',
+                '홈으로',
                 style: TextStyle(fontSize: 9),
               ),
             ),
             Tab(
               icon: Icon(
-                Icons.save_alt,
+                Icons.favorite,
                 size: 18,
               ),
               child: Text(
@@ -34,7 +34,7 @@ class Bottom extends StatelessWidget {
             ),
             Tab(
               icon: Icon(
-                Icons.list,
+                Icons.settings,
                 size: 18,
               ),
               child: Text(
