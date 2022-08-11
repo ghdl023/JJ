@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
+import 'main_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -30,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       var token = await AuthApi.instance.issueAccessToken(authCode: authCode);
       print(token);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()),);
     } catch(e) {
       print(e.toString());
     }

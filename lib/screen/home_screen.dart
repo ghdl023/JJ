@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -65,110 +66,124 @@ class _HomeScreenState extends State<HomeScreen> {
       // appBar: AppBar(
       //   title: Text(""),
       // ),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Container(
-          decoration: BoxDecoration(
-            image: backgroundImages.isNotEmpty ? DecorationImage(
-              image:  NetworkImage(backgroundImages[currentBackgroundImageIndex]),
-              fit: BoxFit.cover,
-            ) : DecorationImage(
-              image:  AssetImage("assets/images/bg.jpg"),
-              fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: backgroundImages.isNotEmpty ? Container(
+              child: Image(
+                  image: CachedNetworkImageProvider(backgroundImages[currentBackgroundImageIndex]),
+                  fit: BoxFit.cover,
+              ),
+            ) : Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
-          child: CarouselSlider(
-            options: CarouselOptions(
-              height: double.infinity,
-              viewportFraction: 1,
-              initialPage: 0,
-              enableInfiniteScroll: true,
-              autoPlay: true,
-              autoPlayInterval: Duration(seconds: 15),
-              autoPlayAnimationDuration: Duration(milliseconds: 1000),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              onPageChanged: (index, CarouselPageChangedReason reason) {
-                if(backgroundImages.isNotEmpty) {
-                  Random random = new Random();
-                  int randomNumber = random.nextInt(backgroundImages.length);
-                  if(randomNumber == currentBackgroundImageIndex) {
-                    randomNumber = randomNumber > 0 ? randomNumber-1 : randomNumber+1;
-                  }
-                  setState(() {
-                    currentBackgroundImageIndex = randomNumber;
-                  });
-                }
-              },
-              scrollDirection: Axis.horizontal,
-            ),
-            items: list.map((item) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return Container(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            child: Text(
-                              '2,323명이 이 주접을 좋아하고 있어요!',
-                              style: TextStyle(
-                                fontSize: 15.0
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Container(
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  height: double.infinity,
+                  viewportFraction: 1,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 15),
+                  autoPlayAnimationDuration: Duration(milliseconds: 1000),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  onPageChanged: (index, CarouselPageChangedReason reason) {
+                    if(backgroundImages.isNotEmpty) {
+                      Random random = new Random();
+                      int randomNumber = random.nextInt(backgroundImages.length);
+                      if(randomNumber == currentBackgroundImageIndex) {
+                        randomNumber = randomNumber > 0 ? randomNumber-1 : randomNumber+1;
+                      }
+                      setState(() {
+                        currentBackgroundImageIndex = randomNumber;
+                      });
+                    }
+                  },
+                  scrollDirection: Axis.horizontal,
+                ),
+                items: list.map((item) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Text(
+                                  '2,323명이 이 주접을 좋아하고 있어요!',
+                                  style: TextStyle(
+                                      fontSize: 15.0
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height:15.0,
-                          ),
-                          Container(
-                            color: Colors.black.withOpacity(0.7),
-                            padding: EdgeInsets.all(15.0),
-                            child: Text(
-                              item.sentence,
-                              style: TextStyle(
-                                fontSize: 28.0,
-                                color: Colors.white.withOpacity(0.9),
+                              SizedBox(
+                                height:15.0,
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height:10.0,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
+                              Container(
+                                color: Colors.black.withOpacity(0.7),
+                                padding: EdgeInsets.all(15.0),
+                                child: Text(
+                                  item.sentence,
+                                  style: TextStyle(
+                                    fontSize: 28.0,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height:10.0,
+                              ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  Text("좋아요",
-                                    style: TextStyle(
-                                      fontSize: 24.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 5.0,
-                                  ),
-                                  Icon(
-                                    item.like ? Icons.favorite : Icons.favorite_border,
-                                    color: Colors.red,
-                                    size: 24.0,
-                                    semanticLabel: 'Text to announce in accessibility modes',
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("좋아요",
+                                        style: TextStyle(
+                                          fontSize: 24.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5.0,
+                                      ),
+                                      Icon(
+                                        item.like ? Icons.favorite : Icons.favorite_border,
+                                        color: Colors.red,
+                                        size: 24.0,
+                                        semanticLabel: 'Text to announce in accessibility modes',
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   );
-                },
-              );
-            }).toList(),
-          ),
-        ),
+                }).toList(),
+              ),
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},

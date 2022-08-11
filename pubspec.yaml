@@ -16,6 +16,7 @@ dependencies:
   cloud_firestore: ^3.4.3
   carousel_slider:
   kakao_flutter_sdk: ^1.2.1
+  cached_network_image: ^3.0.0
 
 dev_dependencies:
   flutter_test:
