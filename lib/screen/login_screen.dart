@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,31 +27,27 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  _issueAccessToken(String authCode) async {
-    try {
-      var token = await AuthApi.instance.issueAccessToken(authCode: authCode);
-      print(token);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()),);
-    } catch(e) {
-      print(e.toString());
-    }
-  }
-
-  _loginWithKakao() async {
-    try {
-      var code = await AuthCodeClient.instance.request();
-      await _issueAccessToken(code);
-    } catch(e) {
-      print(e.toString());
-    }
-  }
-
   _loginWithTalk() async {
     print("_loginWithTalk");
+
     try {
-      var code = await AuthCodeClient.instance.requestWithTalk();
-      await _issueAccessToken(code);
-    } catch(e) {
+      OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+      print("token");
+      print(token);
+
+      try {
+        User user = await UserApi.instance.me();
+        print( '사용자 정보 요청 성공'
+            '\n회원번호: ${user.id}'
+            '\n이메일: ${user.kakaoAccount?.email}'
+            '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
+            '\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}');
+      } catch (e) {
+        print(e.toString());
+      }
+      Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()),);
+
+    } catch (e) {
       print(e.toString());
     }
   }
@@ -86,27 +81,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 InkWell(
-                  onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+                  onTap: _isKakaoTalkInstalled ? _loginWithTalk : null,
                   child: Container(
                       width: MediaQuery.of(context).size.width *0.7,
-                      height: MediaQuery.of(context).size.height *0.07,
+                      height: MediaQuery.of(context).size.height *0.06,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.yellow,
+                        borderRadius: BorderRadius.circular(10),
+                        color: _isKakaoTalkInstalled ? Colors.yellow : Colors.white,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Icon(Icons.chat_bubble, color: Colors.black.withOpacity(0.8)),
-                          SizedBox(width:10,),
-                          Text(
-                            '카카오톡으로 시작하기',
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.8),
-                              fontWeight: FontWeight.w600,
-                              fontSize:17,
+                          Icon(Icons.chat_bubble, color: Colors.black.withOpacity(0.8), size: 18,),
+                          Container(
+                            child: Text(
+                              _isKakaoTalkInstalled ? '카카오로 시작하기' : '카카오톡이 설치되어 있지 않습니다.',
+                              style: TextStyle(
+                                color: Colors.black.withOpacity(0.8),
+                                fontWeight: FontWeight.w600,
+                                fontSize:14,
+                              ),
                             ),
                           ),
+                          Container(),
                         ],
                       )
                   ),

@@ -7,6 +7,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:favorite_button/favorite_button.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import '../model/model_item.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -230,8 +231,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                       FavoriteButton(
                                         isFavorite: true,
                                         // iconDisabledColor: Colors.white,
-                                        valueChanged: (_isFavorite) {
+                                        valueChanged: (_isFavorite) async {
                                           print('Is Favorite : $_isFavorite');
+
+                                          try {
+                                            User user = await UserApi.instance.me();
+                                            print( '사용자 정보 요청 성공'
+                                                '\n회원번호: ${user.id}'
+                                                '\n이메일: ${user.kakaoAccount?.email}'
+                                                '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
+                                                '\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}');
+                                          } catch (e) {
+                                            print(e.toString());
+                                          }
                                         },
                                       ),
                                     ],
@@ -250,29 +262,29 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        elevation: 0,
-        child: Container(
-          height: 70,
-          width: 70,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.all(Radius.circular(50)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.redAccent.withOpacity(0.2),
-                spreadRadius: 3,
-                blurRadius: 3,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Icon(Icons.add),
-        ),
-        backgroundColor: Colors.tealAccent,
-        foregroundColor: Colors.black,
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   elevation: 0,
+      //   child: Container(
+      //     height: 70,
+      //     width: 70,
+      //     decoration: BoxDecoration(
+      //       color: Colors.transparent,
+      //       borderRadius: BorderRadius.all(Radius.circular(50)),
+      //       boxShadow: [
+      //         BoxShadow(
+      //           color: Colors.redAccent.withOpacity(0.2),
+      //           spreadRadius: 3,
+      //           blurRadius: 3,
+      //           offset: Offset(0, 3),
+      //         ),
+      //       ],
+      //     ),
+      //     child: Icon(Icons.add),
+      //   ),
+      //   backgroundColor: Colors.tealAccent,
+      //   foregroundColor: Colors.black,
+      // ),
     );
   }
 }
