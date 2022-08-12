@@ -26,7 +26,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(AssetImage("assets/images/bg.png"), context);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "하루주접",
       theme: ThemeData(
         brightness: Brightness.dark,
