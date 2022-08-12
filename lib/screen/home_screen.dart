@@ -60,6 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget defaultBackgroundImage() {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/bg.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,21 +82,20 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: backgroundImages.isNotEmpty ? Container(
-              child: Image(
-                  image: CachedNetworkImageProvider(backgroundImages[currentBackgroundImageIndex]),
-                  fit: BoxFit.cover,
-              ),
-            ) : Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/bg.jpg"),
-                  fit: BoxFit.cover,
+            child: backgroundImages.isNotEmpty ? CachedNetworkImage(
+              imageUrl: backgroundImages[currentBackgroundImageIndex],
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => defaultBackgroundImage(),
+            ) : defaultBackgroundImage(),
           ),
           SizedBox(
             width: double.infinity,
@@ -146,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               SizedBox(
-                                height:10.0,
+                                height:25.0,
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
