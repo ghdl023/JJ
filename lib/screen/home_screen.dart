@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clipboard/clipboard.dart';
+import 'package:favorite_button/favorite_button.dart';
 import '../model/model_item.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -92,8 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
+              // progressIndicatorBuilder: (context, url, downloadProgress) =>
+              //     CircularProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) => defaultBackgroundImage(),
             ) : defaultBackgroundImage(),
           ),
@@ -137,21 +139,73 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   '2,323명이 이 주접을 좋아하고 있어요!',
                                   style: TextStyle(
-                                      fontSize: 15.0
+                                      fontSize: 12.0
                                   ),
                                 ),
                               ),
                               SizedBox(
                                 height:15.0,
                               ),
-                              Container(
-                                color: Colors.black.withOpacity(0.7),
-                                padding: EdgeInsets.all(15.0),
-                                child: Text(
-                                  item.sentence,
-                                  style: TextStyle(
-                                    fontSize: 28.0,
-                                    color: Colors.white.withOpacity(0.9),
+                              InkWell(
+                                onTap: (){
+                                  FlutterClipboard.copy(item.sentence).then(( value ) {
+                                    print('copied');
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '주접이 클립보드에 복사되었습니다. 😍',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.black54,
+                                        duration: Duration(milliseconds: 3000),
+                                        behavior: SnackBarBehavior.floating,
+                                        // action: SnackBarAction(
+                                        //   label: 'Undo',
+                                        //   textColor: Colors.white,
+                                        //   onPressed: () => print('Pressed'),
+                                        // ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                          // side: BorderSide(
+                                          //   color: Colors.red,
+                                          //   width: 2,
+                                          // ),
+                                        ),
+                                      ),
+                                    );
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(left:10, right:10),
+                                  padding: EdgeInsets.only(left: 15.0, right:15.0, top: 30, bottom: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.7),
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        item.sentence,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.white.withOpacity(0.9),
+                                        ),
+                                      ),
+                                      SizedBox(height:10),
+                                      Container(
+                                        width:double.infinity,
+                                        alignment: Alignment.bottomRight,
+                                        child: Text(
+                                          'copy',
+                                          style: TextStyle(
+                                            fontSize: 11.0,
+                                            color: Colors.white.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -164,20 +218,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text("좋아요",
-                                        style: TextStyle(
-                                          fontSize: 24.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 5.0,
-                                      ),
-                                      Icon(
-                                        item.like ? Icons.favorite : Icons.favorite_border,
-                                        color: Colors.red,
-                                        size: 24.0,
-                                        semanticLabel: 'Text to announce in accessibility modes',
+                                      // Text("좋아요",
+                                      //   style: TextStyle(
+                                      //     fontSize: 24.0,
+                                      //     color: Colors.white,
+                                      //   ),
+                                      // ),
+                                      // SizedBox(
+                                      //   width: 5.0,
+                                      // ),
+                                      FavoriteButton(
+                                        isFavorite: true,
+                                        // iconDisabledColor: Colors.white,
+                                        valueChanged: (_isFavorite) {
+                                          print('Is Favorite : $_isFavorite');
+                                        },
                                       ),
                                     ],
                                   ),
