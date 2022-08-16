@@ -21,6 +21,7 @@ dependencies:
   favorite_button: ^0.0.4
   flutter_launcher_icons: ^0.10.0
   flutter_native_splash: ^2.1.6
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

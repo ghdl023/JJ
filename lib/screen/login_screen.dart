@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,10 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
             '\n이메일: ${user.kakaoAccount?.email}'
             '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
             '\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}');
+
+
+        // local storage에 eamil 저장
+        final prefs = await SharedPreferences.getInstance();
+        int? _id = user.id;
+        if(_id != null) {
+          await prefs.setString('kakaoUserId', _id.toString());
+        }
+
       } catch (e) {
         print(e.toString());
       }
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()),);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainScreen()), (route) => false);
 
     } catch (e) {
       print(e.toString());

@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../model/model_item.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,31 +24,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<dynamic> backgroundImages = [];
   int currentBackgroundImageIndex = 0;
+  int lastJooJubIndex = 0;
 
-  List<Item> list = [
-    Item.fromMap({
-      "sentence": "기억나? 우리 둘이서 루브르 박물관 털러갔는데 너는 조각상인척해서 나만 경찰에 잡혀갔잖아",
-      "like": false,
-    }),
-    Item.fromMap({
-      "sentence": "너 감옥 갈뻔했어. 나 심쿵사 할뻔했잖아.",
-      "like": false,
-    }),
-    Item.fromMap({
-      "sentence": "나 오늘 수영 배웠어. 너에게 빠져도 살기위해서",
-      "like": false,
-    }),
-    Item.fromMap({
-      "sentence": "나 좋은 생각났어. 네 생각",
-      "like": false,
-    }),
-  ];
+  late String kakaoUserId;
+
 
   @override
   void initState() {
     super.initState();
-    FirebaseFirestore.instance.collection('images').doc('HwdDVYaSJep2uIwMrFAn')
-      .get().then((DocumentSnapshot documentSnapshot) {
+    // print("home init!!!!");
+    firestore.collection('images').doc('HwdDVYaSJep2uIwMrFAn')
+        .get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         print('Document data: ${documentSnapshot.data()}');
         Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
@@ -61,6 +49,18 @@ class _HomeScreenState extends State<HomeScreen> {
         print('Document does not exist on the database');
       }
     });
+
+    getKakaoUserId();
+  }
+
+  getKakaoUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? _id = prefs.getString('kakaoUserId');
+    if(_id != null) {
+      setState(() {
+        kakaoUserId = _id;
+      });
+    }
   }
 
   Widget defaultBackgroundImage() {
@@ -74,6 +74,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
+  bool _isFavoriteByItem(var item) {
+    bool isLike = false;
+    print(kakaoUserId);
+    print(item["like_users"]);
+    if(item["like_users"][kakaoUserId] != null) {
+      isLike = item["like_users"][kakaoUserId];
+    }
+    return isLike;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,209 +93,237 @@ class _HomeScreenState extends State<HomeScreen> {
       // ),
       body: Stack(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: backgroundImages.isNotEmpty ? CachedNetworkImage(
-              imageUrl: backgroundImages[currentBackgroundImageIndex],
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              // progressIndicatorBuilder: (context, url, downloadProgress) =>
-              //     CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => defaultBackgroundImage(),
-            ) : defaultBackgroundImage(),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: Container(
-              child: CarouselSlider(
-                options: CarouselOptions(
+          StreamBuilder<QuerySnapshot>(
+            stream: firestore.collection('joojubs').snapshots(),
+            builder: (context, snapshot) {
+              // print("joojubs snapshot:");
+              // print(snapshot);
+              if(snapshot.connectionState == ConnectionState.waiting) {
+                return Container();
+                return SizedBox(
+                  width: double.infinity,
                   height: double.infinity,
-                  viewportFraction: 1,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 15),
-                  autoPlayAnimationDuration: Duration(milliseconds: 1000),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  onPageChanged: (index, CarouselPageChangedReason reason) {
-                    if(backgroundImages.isNotEmpty) {
-                      Random random = new Random();
-                      int randomNumber = random.nextInt(backgroundImages.length);
-                      if(randomNumber == currentBackgroundImageIndex) {
-                        randomNumber = randomNumber > 0 ? randomNumber-1 : randomNumber+1;
-                      }
-                      setState(() {
-                        currentBackgroundImageIndex = randomNumber;
-                      });
-                    }
-                  },
-                  scrollDirection: Axis.horizontal,
-                ),
-                items: list.map((item) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                child: Text(
-                                  '2,323명이 이 주접을 좋아하고 있어요!',
-                                  style: TextStyle(
-                                      fontSize: 12.0
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height:15.0,
-                              ),
-                              InkWell(
-                                onTap: (){
-                                  FlutterClipboard.copy(item.sentence).then(( value ) {
-                                    print('copied');
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '주접이 클립보드에 복사되었습니다. 😍',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        backgroundColor: Colors.black54,
-                                        duration: Duration(milliseconds: 3000),
-                                        behavior: SnackBarBehavior.floating,
-                                        // action: SnackBarAction(
-                                        //   label: 'Undo',
-                                        //   textColor: Colors.white,
-                                        //   onPressed: () => print('Pressed'),
-                                        // ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                          // side: BorderSide(
-                                          //   color: Colors.red,
-                                          //   width: 2,
-                                          // ),
-                                        ),
-                                      ),
-                                    );
-                                  });
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(left:10, right:10),
-                                  padding: EdgeInsets.only(left: 15.0, right:15.0, top: 30, bottom: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.7),
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        item.sentence,
-                                        style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: Colors.white.withOpacity(0.9),
-                                        ),
-                                      ),
-                                      SizedBox(height:10),
-                                      Container(
-                                        width:double.infinity,
-                                        alignment: Alignment.bottomRight,
-                                        child: Text(
-                                          'copy',
-                                          style: TextStyle(
-                                            fontSize: 11.0,
-                                            color: Colors.white.withOpacity(0.7),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height:25.0,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Text("좋아요",
-                                      //   style: TextStyle(
-                                      //     fontSize: 24.0,
-                                      //     color: Colors.white,
-                                      //   ),
-                                      // ),
-                                      // SizedBox(
-                                      //   width: 5.0,
-                                      // ),
-                                      FavoriteButton(
-                                        isFavorite: true,
-                                        // iconDisabledColor: Colors.white,
-                                        valueChanged: (_isFavorite) async {
-                                          print('Is Favorite : $_isFavorite');
-
-                                          try {
-                                            User user = await UserApi.instance.me();
-                                            print( '사용자 정보 요청 성공'
-                                                '\n회원번호: ${user.id}'
-                                                '\n이메일: ${user.kakaoAccount?.email}'
-                                                '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
-                                                '\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}');
-                                          } catch (e) {
-                                            print(e.toString());
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                );
+              }
+              var joojubList = [];
+              if(snapshot.data!.docs.isNotEmpty) {
+                joojubList = snapshot.data!.docs;
+              }
+              return Stack(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: backgroundImages.isNotEmpty ? CachedNetworkImage(
+                      imageUrl: backgroundImages[currentBackgroundImageIndex],
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      );
-                    },
-                  );
-                }).toList(),
+                      ),
+                      // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      //     CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => defaultBackgroundImage(),
+                    ) : defaultBackgroundImage(),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Container(
+                      child: CarouselSlider(
+                        options: CarouselOptions(
+                          height: double.infinity,
+                          viewportFraction: 1,
+                          initialPage: lastJooJubIndex,
+                          enableInfiniteScroll: true,
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 15),
+                          autoPlayAnimationDuration: Duration(milliseconds: 1000),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          onPageChanged: (index, CarouselPageChangedReason reason) {
+                            if(backgroundImages.isNotEmpty) {
+                              Random random = new Random();
+                              int randomNumber = random.nextInt(backgroundImages.length);
+                              if(randomNumber == currentBackgroundImageIndex) {
+                                randomNumber = randomNumber > 0 ? randomNumber-1 : randomNumber+1;
+                              }
+                              setState(() {
+                                currentBackgroundImageIndex = randomNumber;
+                                if(joojubList.length-1 > lastJooJubIndex) {
+                                  lastJooJubIndex++;
+                                } else {
+                                  lastJooJubIndex = 0;
+                                }
+                              });
+
+                            }
+                          },
+                          scrollDirection: Axis.horizontal,
+                        ),
+                        items: joojubList.map((item) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        child: Text(
+                                          '${item["like_count"]}명이 이 주접을 좋아하고 있어요!',
+                                          style: TextStyle(
+                                              fontSize: 12.0
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height:15.0,
+                                      ),
+                                      InkWell(
+                                        onTap: (){
+                                          FlutterClipboard.copy(item["sentence"]).then(( value ) {
+                                            print('copied');
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  '주접이 클립보드에 복사되었습니다. 😍',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                backgroundColor: Colors.black54,
+                                                duration: Duration(milliseconds: 3000),
+                                                behavior: SnackBarBehavior.floating,
+                                                // action: SnackBarAction(
+                                                //   label: 'Undo',
+                                                //   textColor: Colors.white,
+                                                //   onPressed: () => print('Pressed'),
+                                                // ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  // side: BorderSide(
+                                                  //   color: Colors.red,
+                                                  //   width: 2,
+                                                  // ),
+                                                ),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.only(left:10, right:10),
+                                          padding: EdgeInsets.only(left: 15.0, right:15.0, top: 30, bottom: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(0.7),
+                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                item["sentence"],
+                                                style: TextStyle(
+                                                  fontSize: 18.0,
+                                                  color: Colors.white.withOpacity(0.9),
+                                                ),
+                                              ),
+                                              SizedBox(height:10),
+                                              Container(
+                                                width:double.infinity,
+                                                alignment: Alignment.bottomRight,
+                                                child: Text(
+                                                  'copy',
+                                                  style: TextStyle(
+                                                    fontSize: 11.0,
+                                                    color: Colors.white.withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height:25.0,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              // Text("좋아요",
+                                              //   style: TextStyle(
+                                              //     fontSize: 24.0,
+                                              //     color: Colors.white,
+                                              //   ),
+                                              // ),
+                                              // SizedBox(
+                                              //   width: 5.0,
+                                              // ),
+                                              FavoriteButton(
+                                                isFavorite: _isFavoriteByItem(item), // false,
+                                                // iconDisabledColor: Colors.white,
+                                                valueChanged: (_isFavorite) async {
+                                                  print('Is Favorite : $_isFavorite');
+
+                                                  var documentSnapshot  = await firestore.collection("joojubs").doc(item["doc_id"]).get();
+                                                  // var doc  = await firestore.collection("joojubs").doc(item["doc_id"]);
+                                                  print("docId is " + item["doc_id"]);
+                                                  firestore.collection("joojubs").doc(item["doc_id"]).update(
+                                                      {
+                                                        'like_count': _isFavorite ? documentSnapshot["like_count"]+1 : documentSnapshot["like_count"]-1,
+                                                        'like_users.${kakaoUserId}' : _isFavorite,
+                                                      });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )
+                ],
+              );
+            },
+          ),
+          if(false)
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/bg.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
               ),
             ),
-          )
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   elevation: 0,
-      //   child: Container(
-      //     height: 70,
-      //     width: 70,
-      //     decoration: BoxDecoration(
-      //       color: Colors.transparent,
-      //       borderRadius: BorderRadius.all(Radius.circular(50)),
-      //       boxShadow: [
-      //         BoxShadow(
-      //           color: Colors.redAccent.withOpacity(0.2),
-      //           spreadRadius: 3,
-      //           blurRadius: 3,
-      //           offset: Offset(0, 3),
-      //         ),
-      //       ],
-      //     ),
-      //     child: Icon(Icons.add),
-      //   ),
-      //   backgroundColor: Colors.tealAccent,
-      //   foregroundColor: Colors.black,
-      // ),
     );
   }
 }
