@@ -48,8 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // local storage에 eamil 저장
         final prefs = await SharedPreferences.getInstance();
         int? _id = user.id;
+        String? email = user.kakaoAccount?.email;
         if(_id != null) {
           await prefs.setString('kakaoUserId', _id.toString());
+          await prefs.setString('kakaoUserEmail', email!);
         }
 
       } catch (e) {
