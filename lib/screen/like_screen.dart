@@ -10,8 +10,11 @@ class LikeScreen extends StatefulWidget {
 class _LikeScreenState extends State<LikeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text("like")
+    return Scaffold(
+      appBar: AppBar(
+        title: Text
+          ("주접 보관함"),
+      ),
     );
   }
 }

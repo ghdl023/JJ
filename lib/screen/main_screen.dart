@@ -16,7 +16,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   List<Widget> pages = [
     HomeScreen(),
-    LikeScreen(),
+    // LikeScreen(),
     SettingScreen(),
   ];
 

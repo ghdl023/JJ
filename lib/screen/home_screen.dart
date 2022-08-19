@@ -11,6 +11,31 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/model_item.dart';
+
+List<String> backgrounds = [
+  "assets/images/background/abdul-gani-m-DJ_kZaITX78-unsplash.jpg",
+  "assets/images/background/alexander-grey-8XkNFQG_cgk-unsplash.jpg",
+  "assets/images/background/alexander-popov-H-FjwCHavfo-unsplash.jpg",
+  "assets/images/background/annie-spratt-penahevUgSA-unsplash.jpg",
+  "assets/images/background/anthony-tran-LMcvt8Rew4c-unsplash.jpg",
+  "assets/images/background/christopher-beloch-P2fBIamIbQk-unsplash.jpg",
+  "assets/images/background/elias-maurer-VWP5h4fKfsM-unsplash.jpg",
+  "assets/images/background/everton-vila-AsahNlC0VhQ-unsplash.jpg",
+  "assets/images/background/freestocks-Y9mWkERHYCU-unsplash.jpg",
+  "assets/images/background/jez-timms-bwtgal6MJLM-unsplash.jpg",
+  "assets/images/background/jonathan-borba-D67gdIA4OjU-unsplash.jpg",
+  "assets/images/background/jonathan-borba-qRNctETJJ_c-unsplash.jpg",
+  "assets/images/background/khadeeja-yasser-FHT0KEOwtyg-unsplash.jpg",
+  "assets/images/background/leonardo-sanches-b7naustT-1E-unsplash.jpg",
+  "assets/images/background/marc-a-sporys-wHaQ4XJ9SgY-unsplash.jpg",
+  "assets/images/background/mayur-gala-2PODhmrvLik-unsplash.jpg",
+  "assets/images/background/oziel-gomez-L8-0SAy-aoQ-unsplash.jpg",
+  "assets/images/background/pablo-heimplatz-OSboZGvoEz4-unsplash.jpg",
+  "assets/images/background/tyler-nix-HuneWvWYh-Y-unsplash.jpg",
+  "assets/images/background/tyler-nix-Pw5uvsFcGF4-unsplash.jpg",
+  "assets/images/background/tyler-nix-sitjgGsVIAs-unsplash.jpg",
+];
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -27,28 +52,29 @@ class _HomeScreenState extends State<HomeScreen> {
   int lastJooJubIndex = 0;
 
   late String kakaoUserId;
+  bool showLikePosts = false;
 
 
   @override
   void initState() {
     super.initState();
     // print("home init!!!!");
-    firestore.collection('images').doc('HwdDVYaSJep2uIwMrFAn')
-        .get().then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        print('Document data: ${documentSnapshot.data()}');
-        Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
-        if(data["list"].isNotEmpty) {
-          setState(() {
-            backgroundImages = data["list"];
-          });
-          print("backgroundImages");
-          print(backgroundImages);
-        }
-      } else {
-        print('Document does not exist on the database');
-      }
-    });
+    // firestore.collection('images').doc('HwdDVYaSJep2uIwMrFAn')
+    //     .get().then((DocumentSnapshot documentSnapshot) {
+    //   if (documentSnapshot.exists) {
+    //     print('Document data: ${documentSnapshot.data()}');
+    //     Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+    //     if(data["list"].isNotEmpty) {
+    //       setState(() {
+    //         backgroundImages = data["list"];
+    //       });
+    //       print("backgroundImages");
+    //       print(backgroundImages);
+    //     }
+    //   } else {
+    //     print('Document does not exist on the database');
+    //   }
+    // });
 
     getKakaoUserId();
   }
@@ -63,18 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget defaultBackgroundImage() {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/images/bg.png"),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-
   bool _isFavoriteByItem(var item) {
     bool isLike = false;
     print(kakaoUserId);
@@ -88,9 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(""),
-      // ),
       body: Stack(
         children: [
           StreamBuilder<QuerySnapshot>(
@@ -100,40 +111,27 @@ class _HomeScreenState extends State<HomeScreen> {
               // print(snapshot);
               if(snapshot.connectionState == ConnectionState.waiting) {
                 return Container();
-                return SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                );
               }
               var joojubList = [];
               if(snapshot.data!.docs.isNotEmpty) {
                 joojubList = snapshot.data!.docs;
+                if(showLikePosts) {
+                  joojubList = joojubList.where((element) => _isFavoriteByItem(element)).toList();
+                }
               }
               return Stack(
                 children: [
                   SizedBox(
                     width: double.infinity,
                     height: double.infinity,
-                    child: backgroundImages.isNotEmpty ? CachedNetworkImage(
-                      imageUrl: backgroundImages[currentBackgroundImageIndex],
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(backgrounds[currentBackgroundImageIndex]),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      //     CircularProgressIndicator(value: downloadProgress.progress),
-                      errorWidget: (context, url, error) => defaultBackgroundImage(),
-                    ) : defaultBackgroundImage(),
+                    ),
                   ),
                   SizedBox(
                     width: double.infinity,
@@ -150,133 +148,121 @@ class _HomeScreenState extends State<HomeScreen> {
                           autoPlayAnimationDuration: Duration(milliseconds: 1000),
                           autoPlayCurve: Curves.fastOutSlowIn,
                           onPageChanged: (index, CarouselPageChangedReason reason) {
-                            if(backgroundImages.isNotEmpty) {
-                              Random random = new Random();
-                              int randomNumber = random.nextInt(backgroundImages.length);
-                              if(randomNumber == currentBackgroundImageIndex) {
-                                randomNumber = randomNumber > 0 ? randomNumber-1 : randomNumber+1;
+                            Random random = new Random();
+                            int randomNumber = random.nextInt(backgrounds.length);
+                            setState(() {
+                              currentBackgroundImageIndex = randomNumber;
+                              print(currentBackgroundImageIndex);
+                              if(joojubList.length-1 > lastJooJubIndex) {
+                                lastJooJubIndex++;
+                              } else {
+                                lastJooJubIndex = 0;
                               }
-                              setState(() {
-                                currentBackgroundImageIndex = randomNumber;
-                                if(joojubList.length-1 > lastJooJubIndex) {
-                                  lastJooJubIndex++;
-                                } else {
-                                  lastJooJubIndex = 0;
-                                }
-                              });
-
-                            }
+                            });
                           },
                           scrollDirection: Axis.horizontal,
                         ),
                         items: joojubList.map((item) {
                           return Builder(
                             builder: (BuildContext context) {
-                              return Container(
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        child: Text(
-                                          '${item["like_count"]}명이 이 주접을 좋아하고 있어요!',
-                                          style: TextStyle(
-                                              fontSize: 12.0
+                              return Stack(
+                                children: [
+                                  Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Container(
+                                          child: Text(
+                                            '이 주접을 ${item["like_count"]}명의 사람들이 좋아해요!',
+                                            style: TextStyle(
+                                                fontSize: 12.0
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height:15.0,
-                                      ),
-                                      InkWell(
-                                        onTap: (){
-                                          FlutterClipboard.copy(item["sentence"]).then(( value ) {
-                                            print('copied');
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  '주접이 클립보드에 복사되었습니다. 😍',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
+                                        SizedBox(
+                                          height:15.0,
+                                        ),
+                                        InkWell(
+                                          onTap: (){
+                                            FlutterClipboard.copy(item["sentence"]).then(( value ) {
+                                              print('copied');
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    '주접이 클립보드에 복사되었습니다. 😍',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  backgroundColor: Colors.black54,
+                                                  duration: Duration(milliseconds: 3000),
+                                                  behavior: SnackBarBehavior.floating,
+                                                  // action: SnackBarAction(
+                                                  //   label: 'Undo',
+                                                  //   textColor: Colors.white,
+                                                  //   onPressed: () => print('Pressed'),
+                                                  // ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    // side: BorderSide(
+                                                    //   color: Colors.red,
+                                                    //   width: 2,
+                                                    // ),
                                                   ),
                                                 ),
-                                                backgroundColor: Colors.black54,
-                                                duration: Duration(milliseconds: 3000),
-                                                behavior: SnackBarBehavior.floating,
-                                                // action: SnackBarAction(
-                                                //   label: 'Undo',
-                                                //   textColor: Colors.white,
-                                                //   onPressed: () => print('Pressed'),
-                                                // ),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  // side: BorderSide(
-                                                  //   color: Colors.red,
-                                                  //   width: 2,
-                                                  // ),
+                                              );
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(left:10, right:10),
+                                            padding: EdgeInsets.only(left: 15.0, right:15.0, top: 30, bottom: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.black.withOpacity(0.7),
+                                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  item["sentence"],
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: Colors.white.withOpacity(0.9),
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          });
-                                        },
-                                        child: Container(
-                                          margin: EdgeInsets.only(left:10, right:10),
-                                          padding: EdgeInsets.only(left: 15.0, right:15.0, top: 30, bottom: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.7),
-                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                SizedBox(height:10),
+                                                Container(
+                                                  width:double.infinity,
+                                                  alignment: Alignment.bottomRight,
+                                                  child: Text(
+                                                    'copy',
+                                                    style: TextStyle(
+                                                      fontSize: 11.0,
+                                                      color: Colors.white.withOpacity(0.7),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                      bottom: 100,
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        child: Center(
                                           child: Column(
                                             children: [
-                                              Text(
-                                                item["sentence"],
-                                                style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  color: Colors.white.withOpacity(0.9),
-                                                ),
-                                              ),
-                                              SizedBox(height:10),
-                                              Container(
-                                                width:double.infinity,
-                                                alignment: Alignment.bottomRight,
-                                                child: Text(
-                                                  'copy',
-                                                  style: TextStyle(
-                                                    fontSize: 11.0,
-                                                    color: Colors.white.withOpacity(0.7),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height:25.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              // Text("좋아요",
-                                              //   style: TextStyle(
-                                              //     fontSize: 24.0,
-                                              //     color: Colors.white,
-                                              //   ),
-                                              // ),
-                                              // SizedBox(
-                                              //   width: 5.0,
-                                              // ),
                                               FavoriteButton(
                                                 isFavorite: _isFavoriteByItem(item), // false,
                                                 // iconDisabledColor: Colors.white,
+                                                iconSize: 80,
                                                 valueChanged: (_isFavorite) async {
                                                   print('Is Favorite : $_isFavorite');
 
                                                   var documentSnapshot  = await firestore.collection("joojubs").doc(item["doc_id"]).get();
-                                                  // var doc  = await firestore.collection("joojubs").doc(item["doc_id"]);
                                                   print("docId is " + item["doc_id"]);
                                                   firestore.collection("joojubs").doc(item["doc_id"]).update(
                                                       {
@@ -285,43 +271,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       });
                                                 },
                                               ),
+                                              SizedBox(height:5),
+                                              Container(
+                                                child: Text(
+                                                  _isFavoriteByItem(item) ? "좋아요!" : "이 주접이 마음에드신다면 좋아요를 눌러주세요!",
+                                                  style: TextStyle(
+                                                    fontSize: 11.0,
+                                                    color: Colors.white.withOpacity(0.87)
+                                                  ),
+                                                ),
+                                              )
                                             ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ],
                                   ),
-                                ),
+                                ],
                               );
                             },
                           );
                         }).toList(),
                       ),
                     ),
-                  )
+                  ),
+                  Positioned(
+                    top: 50,
+                    right: 20,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          showLikePosts = !showLikePosts;
+                        });
+                      },
+                      child: Container(
+                        child: Text(
+                          showLikePosts ? "모두 보기" : "좋아요만 보기",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.85),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               );
             },
           ),
-          if(false)
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/bg.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
     );

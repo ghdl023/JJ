@@ -22,16 +22,16 @@ class Bottom extends StatelessWidget {
                 style: TextStyle(fontSize: 9),
               ),
             ),
-            Tab(
-              icon: Icon(
-                Icons.favorite,
-                size: 18,
-              ),
-              child: Text(
-                '주접 보관함',
-                style: TextStyle(fontSize: 9),
-              ),
-            ),
+            // Tab(
+            //   icon: Icon(
+            //     Icons.favorite,
+            //     size: 18,
+            //   ),
+            //   child: Text(
+            //     '주접 보관함',
+            //     style: TextStyle(fontSize: 9),
+            //   ),
+            // ),
             Tab(
               icon: Icon(
                 Icons.settings,
