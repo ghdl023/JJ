@@ -11,6 +11,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/model_item.dart';
+import 'background_setting_screen.dart';
 
 List<String> backgrounds = [
   "assets/images/background/abdul-gani-m-DJ_kZaITX78-unsplash.jpg",
@@ -47,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> streamData;
 
-  List<dynamic> backgroundImages = [];
-  int currentBackgroundImageIndex = 0;
   int lastJooJubIndex = 0;
 
   late String kakaoUserId;
+  String background_image = backgrounds[0];
+
   bool showLikePosts = false;
 
 
@@ -59,24 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // print("home init!!!!");
-    // firestore.collection('images').doc('HwdDVYaSJep2uIwMrFAn')
-    //     .get().then((DocumentSnapshot documentSnapshot) {
-    //   if (documentSnapshot.exists) {
-    //     print('Document data: ${documentSnapshot.data()}');
-    //     Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
-    //     if(data["list"].isNotEmpty) {
-    //       setState(() {
-    //         backgroundImages = data["list"];
-    //       });
-    //       print("backgroundImages");
-    //       print(backgroundImages);
-    //     }
-    //   } else {
-    //     print('Document does not exist on the database');
-    //   }
-    // });
-
     getKakaoUserId();
+    getBackgroundImage();
   }
 
   getKakaoUserId() async {
@@ -86,6 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         kakaoUserId = _id;
       });
+    }
+  }
+
+  getBackgroundImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? _imageUrl = prefs.getString('background_image');
+    if(_imageUrl != null) {
+      setState(() {
+        background_image = _imageUrl;
+      });
+      precacheImage(AssetImage(background_image), context);
     }
   }
 
@@ -127,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(backgrounds[currentBackgroundImageIndex]),
+                          image: AssetImage(background_image),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -148,11 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           autoPlayAnimationDuration: Duration(milliseconds: 1000),
                           autoPlayCurve: Curves.fastOutSlowIn,
                           onPageChanged: (index, CarouselPageChangedReason reason) {
-                            Random random = new Random();
-                            int randomNumber = random.nextInt(backgrounds.length);
                             setState(() {
-                              currentBackgroundImageIndex = randomNumber;
-                              print(currentBackgroundImageIndex);
                               if(joojubList.length-1 > lastJooJubIndex) {
                                 lastJooJubIndex++;
                               } else {
@@ -173,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: <Widget>[
                                         Container(
                                           child: Text(
-                                            '이 주접을 ${item["like_count"]}명의 사람들이 좋아해요!',
+                                            '이 주접을 ${item["like_count"]}명의 사람들이 좋아해요',
                                             style: TextStyle(
                                                 fontSize: 12.0
                                             ),
@@ -274,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               SizedBox(height:5),
                                               Container(
                                                 child: Text(
-                                                  _isFavoriteByItem(item) ? "좋아요!" : "이 주접이 마음에드신다면 좋아요를 눌러주세요!",
+                                                  _isFavoriteByItem(item) ? "좋아요!" : "이 주접이 마음에드신다면 좋아요를 눌러주세요.",
                                                   style: TextStyle(
                                                     fontSize: 11.0,
                                                     color: Colors.white.withOpacity(0.87)
@@ -313,7 +305,30 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  ),
+                  ), // 좋아요만 보기, 모두 보기
+                  Positioned(
+                    top: 50,
+                    left: 20,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BackgroundSettingScreen()))
+                            .then((value) => {
+                              getBackgroundImage()
+                          });
+                        });
+                      },
+                      child: Container(
+                        child: Text(
+                          "배경 이미지",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.85),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // 배경화면 설정
                 ],
               );
             },
