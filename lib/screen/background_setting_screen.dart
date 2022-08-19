@@ -1,30 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-List<String> backgrounds = [
-  "assets/images/background/abdul-gani-m-DJ_kZaITX78-unsplash.jpg",
-  "assets/images/background/alexander-grey-8XkNFQG_cgk-unsplash.jpg",
-  "assets/images/background/alexander-popov-H-FjwCHavfo-unsplash.jpg",
-  "assets/images/background/annie-spratt-penahevUgSA-unsplash.jpg",
-  "assets/images/background/anthony-tran-LMcvt8Rew4c-unsplash.jpg",
-  "assets/images/background/christopher-beloch-P2fBIamIbQk-unsplash.jpg",
-  "assets/images/background/elias-maurer-VWP5h4fKfsM-unsplash.jpg",
-  "assets/images/background/everton-vila-AsahNlC0VhQ-unsplash.jpg",
-  "assets/images/background/freestocks-Y9mWkERHYCU-unsplash.jpg",
-  "assets/images/background/jez-timms-bwtgal6MJLM-unsplash.jpg",
-  "assets/images/background/jonathan-borba-D67gdIA4OjU-unsplash.jpg",
-  "assets/images/background/jonathan-borba-qRNctETJJ_c-unsplash.jpg",
-  "assets/images/background/khadeeja-yasser-FHT0KEOwtyg-unsplash.jpg",
-  "assets/images/background/leonardo-sanches-b7naustT-1E-unsplash.jpg",
-  "assets/images/background/marc-a-sporys-wHaQ4XJ9SgY-unsplash.jpg",
-  "assets/images/background/mayur-gala-2PODhmrvLik-unsplash.jpg",
-  "assets/images/background/oziel-gomez-L8-0SAy-aoQ-unsplash.jpg",
-  "assets/images/background/pablo-heimplatz-OSboZGvoEz4-unsplash.jpg",
-  "assets/images/background/tyler-nix-HuneWvWYh-Y-unsplash.jpg",
-  "assets/images/background/tyler-nix-Pw5uvsFcGF4-unsplash.jpg",
-  "assets/images/background/tyler-nix-sitjgGsVIAs-unsplash.jpg",
-];
+import '../screen/home_screen.dart';
 
 class BackgroundSettingScreen extends StatefulWidget {
   const BackgroundSettingScreen({Key? key}) : super(key: key);
