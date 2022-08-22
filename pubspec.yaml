@@ -23,6 +23,7 @@ dependencies:
   flutter_native_splash: ^2.1.6
   shared_preferences: ^2.0.15
   o_popup: ^1.0.1
+  hexcolor: ^2.0.7
 
 dev_dependencies:
   flutter_test:
@@ -46,12 +47,12 @@ flutter_icons:
 
 
 flutter_native_splash:
-  color: "#ffffff"
-  image: assets/images/logo.png
+  color: "#FF304F"
+#  image: assets/images/logo.png
 
   android_12:
-    color: "#ffffff"
-    image: assets/images/logo.png
+    color: "#FF304F"
+#    image: assets/images/logo.png
 
 
   fullScreen: true

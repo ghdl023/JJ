@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:jj/screen/main_screen.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Add this
@@ -61,7 +62,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), () => _checkUser(context));
+    Future.delayed(Duration(milliseconds: 3000), () => _checkUser(context));
   }
 
 
@@ -79,7 +80,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: HexColor("#FF304F"),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       // decoration: BoxDecoration(
