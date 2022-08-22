@@ -408,6 +408,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  o_popup:
+    dependency: "direct main"
+    description:
+      name: o_popup
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   octo_image:
     dependency: transitive
     description:

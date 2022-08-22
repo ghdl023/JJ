@@ -10,6 +10,7 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:o_popup/o_popup.dart';
 
 import '../model/model_item.dart';
 import 'background_setting_screen.dart';
@@ -67,6 +68,13 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     // print("home init!!!!");
     getKakaoUserId();
     getBackgroundImage();
+  }
+
+  void didChangeDependencies() {
+    for(int i=0; i<backgrounds.length; i++) {
+      precacheImage(AssetImage(backgrounds[i]), context);
+    }
+    super.didChangeDependencies();
   }
 
   getKakaoUserId() async {
@@ -327,24 +335,64 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               Positioned(
                 top: 50,
                 left: 20,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => BackgroundSettingScreen()))
-                          .then((value) => {
-                        getBackgroundImage()
-                      });
-                    });
-                  },
-                  child: Container(
-                    child: Text(
-                      "배경 이미지",
+                child: OPopupTrigger(
+                  barrierAnimationDuration: Duration(milliseconds: 400),
+                  triggerWidget: Container(
+                    // padding: EdgeInsets.all(10.0),
+                    // color: Colors.amber,
+                    child: Text('배경 이미지',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.85),
                       ),
                     ),
                   ),
+                  // popupHeader: OPopupContent.standardizedHeader('Some header'),
+                  popupContent: GridView.builder(
+                      itemCount: backgrounds.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            onTap: () async {
+                              final prefs = await SharedPreferences.getInstance();
+                              await prefs.setString('background_image', backgrounds[index]);
+                              setState(() {
+                                background_image = backgrounds[index];
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                                decoration: new BoxDecoration(
+                                    image: new DecorationImage(
+                                        image: new AssetImage(backgrounds[index]),
+                                        fit: BoxFit.cover)
+                                )
+                            ),
+                          ),
+                        );
+                      }),
+                  // popupActionRow: Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     OutlinedButton(
+                  //       style: OutlinedButton.styleFrom(
+                  //         textStyle: TextStyle(color: Colors.white),
+                  //       ),
+                  //       child: Text('Yes'),
+                  //       onPressed: () => Navigator.of(context).pop(),
+                  //     ),
+                  //     OutlinedButton(
+                  //       style: OutlinedButton.styleFrom(
+                  //         textStyle: TextStyle(color: Colors.white),
+                  //       ),
+                  //       child: Text('No'),
+                  //       onPressed: () => Navigator.of(context).pop(),
+                  //     ),
+                  //   ],
+                  // ),
                 ),
               ), // 배경화면 설정
             ],

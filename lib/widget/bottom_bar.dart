@@ -18,7 +18,7 @@ class Bottom extends StatelessWidget {
                 size: 18,
               ),
               child: Text(
-                '홈으로',
+                '주접 보기',
                 style: TextStyle(fontSize: 9),
               ),
             ),
