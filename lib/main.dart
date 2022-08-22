@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jj/screen/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jj/screen/main_screen.dart';
@@ -13,6 +14,10 @@ void main() async {
     nativeAppKey: '3541a223e36b01d9ce4211b799b824a5',
     loggingEnabled: true,
   );
+
+  SystemChrome.setEnabledSystemUIOverlays(
+      [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+
   runApp(MyApp());
 }
 
@@ -56,7 +61,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () => _checkUser(context));
+    Future.delayed(Duration(milliseconds: 500), () => _checkUser(context));
   }
 
 
@@ -74,12 +79,20 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/images/bg.png"),
-          fit: BoxFit.cover,
+      // decoration: BoxDecoration(
+      //   image: DecorationImage(
+      //     image: AssetImage("assets/images/bg.png"),
+      //     fit: BoxFit.cover,
+      //   ),
+      // ),
+      child: Center(
+        child: Container(
+          width: 150,
+          height: 150,
+          child: Image.asset("assets/images/logo.png"),
         ),
       ),
     );
