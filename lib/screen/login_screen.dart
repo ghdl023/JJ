@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main_screen.dart';
@@ -83,13 +84,44 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Container(),
                 Container(
-                  child: Text(
-                      "하        루        주        접",
-                    style: TextStyle(
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 14.0,
-                      color: Colors.white.withOpacity(0.5),
-                    ),
+                  width: MediaQuery.of(context).size.width *0.6,
+                  // color: Colors.red,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "하",
+                        style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "루",
+                        style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "주",
+                        style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "접",
+                        style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 InkWell(
@@ -97,14 +129,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                       width: MediaQuery.of(context).size.width *0.7,
                       height: MediaQuery.of(context).size.height *0.06,
+                      padding: EdgeInsets.only(left:15, right:15),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: _isKakaoTalkInstalled ? Colors.yellow : Colors.white,
+                        borderRadius: BorderRadius.circular(50),
+                        color: _isKakaoTalkInstalled ? HexColor("#FEE500") : Colors.white,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(Icons.chat_bubble, color: Colors.black.withOpacity(0.8), size: 18,),
+                          Image.asset("assets/images/kakao_icon.png", width: 30,),
                           Container(
                             child: Text(
                               _isKakaoTalkInstalled ? '카카오로 시작하기' : '카카오톡이 설치되어 있지 않습니다.',
@@ -115,7 +148,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          Container(),
+                          Container(
+                            width:20,
+                          ),
                         ],
                       )
                   ),

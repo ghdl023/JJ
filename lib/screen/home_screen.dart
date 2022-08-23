@@ -71,9 +71,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   void didChangeDependencies() {
-    for(int i=0; i<backgrounds.length; i++) {
-      precacheImage(AssetImage(backgrounds[i]), context);
-    }
+    // for(int i=0; i<backgrounds.length; i++) {
+    //   precacheImage(AssetImage(backgrounds[i]), context);
+    // }
     super.didChangeDependencies();
   }
 
@@ -279,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                         SizedBox(height:5),
                                         Container(
                                           child: Text(
-                                            _isFavoriteByItem(item) ? "좋아요!" : "이 주접이 마음에드신다면 좋아요를 눌러주세요.",
+                                            _isFavoriteByItem(item) ? "좋아요!" : "주접이 마음에 드시나요? 좋아요를 눌러주세요.",
                                             style: TextStyle(
                                                 fontSize: 11.0,
                                                 color: Colors.white.withOpacity(0.87)

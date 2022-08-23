@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:jj/screen/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -53,108 +54,119 @@ class _SettingScreenState extends State<SettingScreen> with AutomaticKeepAliveCl
         title: Text("설정"),
         // centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.only(left:10, top:15, bottom:15),
-            decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                    color:Colors.white.withOpacity(0.5),
-                    width:1.0,
-                  )
+      body: Container(
+        color: Color.fromRGBO(240, 240, 240, 1),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.only(left:10, top:15, bottom:15),
+              decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                      color:Colors.black.withOpacity(0.5),
+                      width:1.0,
+                    )
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.account_circle,
+                    color: Colors.black,
+                    size: 24.0,
+                  ),
+                  SizedBox(width:5.0),
+                  Text("카카오 계정",
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),)
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.account_circle,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                SizedBox(width:5.0),
-                Text("카카오 계정")
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.only(left:10, right:10),
-            padding: EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  email,
-                  style: TextStyle(
-                      fontSize: 15.0,
-                      color: Colors.white70
-                  ),
-                ),
-                Flexible(child: Container()),
-                InkWell(
-                  onTap: kakaoLogout,
-                  child: Text("로그아웃",
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(left:10, right:10),
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    email,
                     style: TextStyle(
                         fontSize: 15.0,
-                        color: Colors.yellowAccent
-                    ),),
-                )
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.only(left:10, top:15, bottom:15),
-            decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                    color:Colors.white.withOpacity(0.5),
-                    width:1.0,
+                        color: Colors.black
+                    ),
+                  ),
+                  Flexible(child: Container()),
+                  InkWell(
+                    onTap: kakaoLogout,
+                    child: Text("로그아웃",
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black.withOpacity(0.5),
+                      ),),
                   )
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
-                  size: 24.0,
+            Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.only(left:10, top:15, bottom:15),
+              decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                      color:Colors.black.withOpacity(0.5),
+                      width:1.0,
+                    )
                 ),
-                SizedBox(width:5.0),
-                Text("앱 정보")
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.only(left:10, right:10),
-            padding: EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "버전",
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    color: Colors.white70
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.more_horiz,
+                    color: Colors.black,
+                    size: 24.0,
                   ),
-                ),
-                Flexible(child: Container()),
-                Text(
-                  "1.0.0",
-                  style: TextStyle(
+                  SizedBox(width:5.0),
+                  Text("앱 정보",style: TextStyle(
                     fontSize: 15.0,
-                      color: Colors.white70
-                  ),
-                ),
-              ],
+                    color: Colors.black,
+                  ),)
+                ],
+              ),
             ),
-          ),
-        ],
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(left:10, right:10),
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "버전",
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black
+                    ),
+                  ),
+                  Flexible(child: Container()),
+                  Text(
+                    "1.0.0",
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
